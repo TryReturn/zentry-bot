@@ -35,7 +35,7 @@
 | `/kick`                | Expulsa a un usuario del servidor.                                        |
 | `/clear`                | Elimina mensajes del canal.                                        |
 | `/bot`                | Muestra información del bot.                                        |
-| `/ping`                | Elimina mensajes del canal.                                        |
+| `/ping`                | Responde con Pong.                                        |
 
 > ⚠️ Algunos comandos pueden requerir permisos administrativos para funcionar correctamente.
 
