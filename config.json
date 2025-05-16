@@ -1,0 +1,43 @@
+{
+  "prefix": "PREFIX_AQUI",
+  "client": {
+    "TOKEN": "TOKEN_AQUI",
+    "ID": "ID_DEL_BOT",
+    "OWNER_ID": "TU_ID"
+  },
+  "sugerencias": {
+    "suggestionsChannel": "CANAL_DE_SUGERENCIAS",
+    "rolesAllowed": [
+      "ROL_ID_AQUI",
+      "ROL_ID_AQUI",
+      "ROL_ID_AQUI"
+    ],
+    "punishmentLogs": "CANAL_DE_SANCIONES"
+  },
+  "staffCommands": {
+    "rolesAllowed": [
+      "ROL_ID_AQUI",
+      "ROL_ID_AQUI",
+      "ROL_ID_AQUI"
+    ],
+    "reactionRoles": {
+      "roleOptions": [
+        {
+          "label": "NOMBRE",
+          "description": "Recibe notificaciones del servidor",
+          "roleId": "AUTOROLE_ROL_ID"
+        },
+        {
+          "label": "NOMBRE",
+          "description": "Acceso a roles de eventos",
+          "roleId": "AUTOROLE_ROL_ID"
+        },
+        {
+          "label": "NOMBRE",
+          "description": "Participa en sorteos",
+          "roleId": "AUTOROLE_ROL_ID"
+        }
+      ]
+    }
+  }
+}
