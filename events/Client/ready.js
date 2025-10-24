@@ -7,7 +7,7 @@ module.exports = {
   name: 'ready',
   run: async (client) => {
     console.log(chalk.green('[READY]'), chalk.white(`${client.user.tag} Está listo.`));
-    console.log("[SOPORTE] >> Support https://discord.gg/2xPFREjJHF");
+    console.log("[SOPORTE] >> Support discord.gg/da7zM3DNTW");
     const up = ms(ms(Math.round(process.uptime() - (client.uptime / 1000)) + ' seconds'));
 
     console.log(
@@ -15,12 +15,12 @@ module.exports = {
       chalk.white('>>'), `Tu IDE tardó ${chalk.magenta(up)} en cargar y conectarse al bot.`
 
     );
-    console.log("[SOPORTE] >> Support https://discord.gg/2xPFREjJHF");
+    console.log("[SOPORTE] >> Support discord.gg/da7zM3DNTW");
     await client.user.fetch();
 
     const activities = [
-      { name: 'discord.gg/2xPFREjJHF Join Now!', type: ActivityType.Watching },
-      { name: 'discord.gg/2xPFREjJHF 🛒', type: ActivityType.Watching },
+      { name: 'discord.gg/da7zM3DNTW Join Now!', type: ActivityType.Watching },
+      { name: 'discord.gg/da7zM3DNTW 🛒', type: ActivityType.Watching },
       { name: 'Developed by: TryReturn', type: ActivityType.Watching },
     ];
 
@@ -32,7 +32,7 @@ module.exports = {
       client.user.setActivity(activities[activityIndex]);
     }, 120000);
 
-    const channelId = '1372700665624793240';
+    const channelId = '';
     const channel = client.channels.cache.get(channelId);
 
     if (channel && channel.isTextBased()) {
@@ -46,7 +46,7 @@ module.exports = {
       channel.send({ embeds: [embed] });
     } else {
       console.error(`[READY ERROR LOG] >> No encuentro el canal con la ID: ${channelId}.`);
-      console.log("[SOPORTE] >> Support https://discord.gg/2xPFREjJHF");
+      console.log("[SOPORTE] >> Support discord.gg/da7zM3DNTW");
     }
   }
 };

@@ -1,8 +1,5 @@
 const { SlashCommandBuilder, PermissionFlagsBits, EmbedBuilder } = require('discord.js');
-const config = require('../../config.json');
-
-const FOOTER_TEXT = '© Lurix Development ᴛᴍ';
-const FOOTER_ICON = 'https://media.discordapp.net/attachments/1372699061928460339/1372709247858507776/5u1fg5s1TWCMQ9Uew8bU2g.png?ex=6827c29c&is=6826711c&hm=35c62966c4c3b719c6cb4a1e23087facaf9b11b5f577867b52ca2cd660eafc7c&=&format=webp&quality=lossless&width=656&height=656';
+const { TEXT, ICON, ADMIN_ROLE_ID, PUNISHMENT_CHANNEL_ID } = require('../../storageSystem.js');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -19,91 +16,87 @@ module.exports = {
                 .setDescription('Razón del baneo')
                 .setRequired(false)
         ),
-
     run: async (client, interaction) => {
         const target = interaction.options.getUser('usuario');
-        const reason = interaction.options.getString('razón') || 'Support https://discord.gg/2xPFREjJHF';
+        const reason = interaction.options.getString('razón') || 'No se proporcionó una razón';
+        const memberRoles = interaction.member.roles.cache;
         const staff = interaction.member;
         const member = await interaction.guild.members.fetch(target.id).catch(() => null);
 
-        const allowedRoles = config.staffCommands.rolesAllowed;
-        const hasStaffRole = staff.roles.cache.some(role => allowedRoles.includes(role.id));
-        if (!hasStaffRole) {
-            return interaction.reply({
-                embeds: [
-                    new EmbedBuilder()
-                        .setTitle('Permiso denegado 🚫')
-                        .setDescription('Necesitas un rol de staff autorizado para usar este comando. Support https://discord.gg/2xPFREjJHF')
-                        .setColor('#068a8f')
-                        .setFooter({ text: FOOTER_TEXT, iconURL: FOOTER_ICON })
-                ],
-                flags: 64
-            });
+
+        if (!memberRoles.has(ADMIN_ROLE_ID) && !staff.permissions.has(PermissionFlagsBits.BanMembers)) {
+            const embed = new EmbedBuilder()
+                .setColor('#ff0000')
+                .setTitle('Acceso denegado 🚫')
+                .setDescription('No tienes permisos suficientes para banear usuarios.')
+                .setFooter({ text: TEXT, iconURL: ICON });
+            return interaction.reply({ embeds: [embed], flags: 64 });
         }
 
         if (!member) {
-            const notFoundEmbed = new EmbedBuilder()
-                .setColor('#068a8f')
-                .setAuthor({ name: FOOTER_TEXT, iconURL: FOOTER_ICON })
+            const embed = new EmbedBuilder()
+                .setColor('#ff0000')
                 .setTitle('Usuario no encontrado 🚫')
-                .setDescription('Ese usuario no está en el servidor o ya fue baneado. Support https://discord.gg/2xPFREjJHF');
-
-            return interaction.reply({ embeds: [notFoundEmbed], flags: 64 });
+                .setDescription('El usuario no está en el servidor.')
+                .setFooter({ text: TEXT, iconURL: ICON });
+            return interaction.reply({ embeds: [embed], flags: 64 });
         }
 
         if (!member.bannable) {
-            const noPermsEmbed = new EmbedBuilder()
-                .setColor('#068a8f')
-                .setAuthor({ name: FOOTER_TEXT, iconURL: FOOTER_ICON })
-                .setTitle('No se puede banear 🚫')
-                .setDescription('No tengo permisos para banear a ese usuario. Support https://discord.gg/2xPFREjJHF');
+            const embed = new EmbedBuilder()
+                .setColor('#ff0000')
+                .setTitle('Error de permisos 🚫')
+                .setDescription('No puedo banear a este usuario.')
+                .setFooter({ text: TEXT, iconURL: ICON });
+            return interaction.reply({ embeds: [embed], flags: 64 });
+        }
 
-            return interaction.reply({ embeds: [noPermsEmbed], flags: 64 });
+        if (member.roles.highest.position >= staff.roles.highest.position) {
+            const embed = new EmbedBuilder()
+                .setColor('#ff0000')
+                .setTitle('Error de jerarquía 🚫')
+                .setDescription('No puedes banear a un usuario con un rol igual o superior al tuyo.')
+                .setFooter({ text: TEXT, iconURL: ICON });
+            return interaction.reply({ embeds: [embed], flags: 64 });
         }
 
         try {
-            await member.ban({ reason: `${interaction.user.tag} (${reason})` });
+            await member.ban({ reason: `${interaction.user.tag} | ${reason}` });
 
             const successEmbed = new EmbedBuilder()
-                .setColor('Orange')
+                .setColor('#00ff00')
                 .setTitle('Usuario baneado ✅')
-                .setAuthor({ name: FOOTER_TEXT, iconURL: FOOTER_ICON })
                 .addFields(
-                    { name: '➥ 👤 Miembro', value: `${target} (${target.id})`, inline: true },
-                    { name: '➥ 🎓 Moderador', value: `${interaction.user}`, inline: true },
-                    { name: '➥ 📂 Razón', value: reason }
+                    { name: '👤 Usuario', value: `${target.tag} (${target.id})`, inline: true },
+                    { name: '📂 Razón', value: reason, inline: false }
                 )
+                .setFooter({ text: TEXT, iconURL: ICON })
                 .setTimestamp();
 
             await interaction.reply({ embeds: [successEmbed], flags: 64 });
 
-            const logChannel = interaction.guild.channels.cache.get(config.sugerencias.punishmentLogs);
-
+            const logChannel = await client.channels.fetch(PUNISHMENT_CHANNEL_ID).catch(() => null);
             if (logChannel) {
                 const logEmbed = new EmbedBuilder()
-                    .setColor('#068a8f')
-                    .setTitle('Baneo de Usuario ✅')
-                    .setAuthor({ name: FOOTER_TEXT, iconURL: FOOTER_ICON })
+                    .setColor('#ffa500')
+                    .setTitle('Registro de Baneo')
                     .addFields(
-                        { name: '➥ 👤 Usuario Baneado', value: `${target} (${target.id})`, inline: true },
-                        { name: '➥ 🎓 Moderador', value: `${interaction.user}`, inline: true },
-                        { name: '➥ 📂 Razón', value: reason }
+                        { name: '👤 Usuario', value: `${target.tag} (${target.id})`, inline: true },
+                        { name: '🎓 Moderador', value: `${interaction.user.tag}`, inline: true },
+                        { name: '📂 Razón', value: reason, inline: false }
                     )
-                    .setFooter({ text: FOOTER_TEXT, iconURL: FOOTER_ICON })
+                    .setFooter({ text: TEXT, iconURL: ICON })
                     .setTimestamp();
-
                 await logChannel.send({ embeds: [logEmbed] });
             }
 
-        } catch (err) {
-            console.error('[Ban Command Error Log] >> Error al banear:', err);
-
+        } catch (error) {
+            console.error('Error al banear:', error);
             const errorEmbed = new EmbedBuilder()
-                .setColor('#068a8f')
-                .setTitle('Error al banear 🚫')
-                .setAuthor({ name: FOOTER_TEXT, iconURL: FOOTER_ICON })
-                .setDescription('Hubo un problema al intentar banear al usuario. Support https://discord.gg/2xPFREjJHF');
-
+                .setColor('#ff0000')
+                .setTitle('Error 🚫')
+                .setDescription('Ocurrió un error al intentar banear al usuario.')
+                .setFooter({ text: TEXT, iconURL: ICON });
             await interaction.reply({ embeds: [errorEmbed], flags: 64 });
         }
     }

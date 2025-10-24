@@ -5,7 +5,6 @@ module.exports = {
   data: new SlashCommandBuilder()
     .setName("suggest")
     .setDescription("📫 Envía una sugerencia al servidor."),
-
   run: async (client, interaction) => {
     await interaction.showModal(modal.build());
   }

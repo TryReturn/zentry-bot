@@ -5,9 +5,9 @@ module.exports = {
     aliases: ['bot', 'info', 'soporte'],
     run: async (client, message, args) => {
 
-        const serverdiscord = "https://discord.gg/2xPFREjJHF";
+        const serverdiscord = "https://discord.gg/da7zM3DNTW";
         const developedGit = "https://github.com/TryReturn";
-        const devmessage = "Este mensaje fue hecho por la administración de Lurix Development.";
+        const devmessage = "Este mensaje fue hecho por la administración de GoalHub Development.";
 
         const embed = new EmbedBuilder()
             .setAuthor({ name: "TryRetuns Bot" })
@@ -17,7 +17,7 @@ module.exports = {
                 { name: 'CONTRATACIONES', value: developedGit },
                 { name: 'INFORMACIONES', value: devmessage }
             )
-            .setFooter({ text: "Lurix Development | By: TryReturn", iconURL: message.author.displayAvatarURL({ dynamic: true }) })
+            .setFooter({ text: "GoalHub Development | By: TryReturn", iconURL: message.author.displayAvatarURL({ dynamic: true }) })
             .setColor('#3498db')
             .setTimestamp();
 

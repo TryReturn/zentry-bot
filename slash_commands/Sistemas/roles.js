@@ -1,8 +1,6 @@
-const { SlashCommandBuilder, ChannelType, EmbedBuilder, ActionRowBuilder, StringSelectMenuBuilder } = require('discord.js');
+const { SlashCommandBuilder, ChannelType, EmbedBuilder, PermissionFlagsBits, ActionRowBuilder, StringSelectMenuBuilder } = require('discord.js');
 const config = require('../../config.json');
-
-const FOOTER_TEXT = '© Lurix Development ᴛᴍ';
-const FOOTER_ICON = 'https://media.discordapp.net/attachments/1372699061928460339/1372709247858507776/5u1fg5s1TWCMQ9Uew8bU2g.png';
+const { TEXT, ICON } = require('../../storageSystem.js');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -14,14 +12,34 @@ module.exports = {
                 .setRequired(true)
                 .addChannelTypes(ChannelType.GuildText)
         ),
-
     run: async (client, interaction) => {
         const channel = interaction.options.getChannel('canal');
+        const memberRoles = interaction.member.roles.cache;
+        const member = interaction.member;
+
+        if (!memberRoles.has(ADMIN_ROLE_ID) && !member.permissions.has(PermissionFlagsBits.Administrator)) {
+            const embed = new EmbedBuilder()
+                .setColor('#ff0000')
+                .setTitle('Acceso denegado 🚫')
+                .setDescription('No tienes permisos suficientes para gestionar sugerencias.')
+                .setFooter({ text: TEXT, iconURL: ICON });
+            return interaction.reply({ embeds: [embed], flags: 64 });
+        }
+
+        if (!channel || !channel.isTextBased()) {
+            const embed = new EmbedBuilder()
+                .setColor('#ff0000')
+                .setTitle('Canal no válido 🚫')
+                .setDescription('Por favor, selecciona un canal de texto válido.')
+                .setFooter({ text: TEXT, iconURL: ICON });
+            return interaction.reply({ embeds: [embed], flags: 64 });
+        }
 
         const embed = new EmbedBuilder()
             .setColor('#3498db')
-            .setTitle('DAME UN TITULO!')
-            .setDescription('Edita este mensaje a tu gusto en la configuración.\n © Lurix Development ᴛᴍ - https://discord.gg/2xPFREjJHF')
+            .setTitle('🎭 Sistema de Roles')
+            .setDescription('Selecciona los roles que desees obtener del menú desplegable.\nPuedes seleccionar múltiples roles a la vez.')
+            .setFooter({ text: TEXT, iconURL: ICON });
 
         const selectMenu = new StringSelectMenuBuilder()
             .setCustomId('reaction-roles')
@@ -40,6 +58,12 @@ module.exports = {
 
         await channel.send({ embeds: [embed], components: [row] });
 
-        await interaction.reply({ content: '✅ | El menú de roles fue enviado con éxito. Support https://discord.gg/2xPFREjJHF', flags: 64 });
+        const successEmbed = new EmbedBuilder()
+            .setColor('#00ff00')
+            .setTitle('✅ Menú enviado')
+            .setDescription(`El menú de roles fue enviado exitosamente a ${channel}.`)
+            .setFooter({ text: TEXT, iconURL: ICON });
+
+        await interaction.reply({ embeds: [successEmbed], flags: 64 });
     }
 };

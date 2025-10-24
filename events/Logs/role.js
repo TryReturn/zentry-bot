@@ -1,68 +1,85 @@
 const { Events, EmbedBuilder } = require('discord.js');
-
-const LOG_CHANNEL_ID = '1372709300010745926';
-const FOOTER_TEXT = '© Lurix Development ᴛᴍ';
-const FOOTER_ICON = 'https://media.discordapp.net/attachments/1372699061928460339/1372709247858507776/5u1fg5s1TWCMQ9Uew8bU2g.png?ex=6827c29c&is=6826711c&hm=35c62966c4c3b719c6cb4a1e23087facaf9b11b5f577867b52ca2cd660eafc7c&=&format=webp&quality=lossless&width=656&height=656';
+const { TEXT, ICON, ADMINLOG_CHANNEL_ID } = require('../../storageSystem');
 
 const roleChangeBuffer = new Map();
 
 module.exports = {
   name: Events.GuildMemberUpdate,
   run: async (client, oldMember, newMember) => {
-    const logChannel = newMember.guild.channels.cache.get(LOG_CHANNEL_ID);
-    if (!logChannel || !logChannel.isTextBased()) return;
+    const logChannel = await client.channels.fetch(ADMINLOG_CHANNEL_ID).catch(() => null);
+    if (!logChannel?.isTextBased()) return;
 
-    const addedRoles = [...newMember.roles.cache.values()].filter(
-      r => !oldMember.roles.cache.has(r.id) && r.name !== '@everyone'
+    const addedRoles = newMember.roles.cache.filter(role => 
+      !oldMember.roles.cache.has(role.id) && role.name !== '@everyone'
     );
-    const removedRoles = [...oldMember.roles.cache.values()].filter(
-      r => !newMember.roles.cache.has(r.id) && r.name !== '@everyone'
+    const removedRoles = oldMember.roles.cache.filter(role => 
+      !newMember.roles.cache.has(role.id) && role.name !== '@everyone'
     );
 
-    if (!addedRoles.length && !removedRoles.length) return;
+    if (addedRoles.size === 0 && removedRoles.size === 0) return;
 
     const key = newMember.id;
+    const now = Date.now();
 
     if (!roleChangeBuffer.has(key)) {
       roleChangeBuffer.set(key, {
-        added: new Set(),
-        removed: new Set(),
-        timeout: null
+        added: new Map(),
+        removed: new Map(),
+        lastUpdate: now
       });
     }
 
     const data = roleChangeBuffer.get(key);
-    addedRoles.forEach(role => data.added.add(role));
-    removedRoles.forEach(role => data.removed.add(role));
+    addedRoles.forEach(role => data.added.set(role.id, role));
+    removedRoles.forEach(role => data.removed.set(role.id, role));
+    data.lastUpdate = now;
 
-    clearTimeout(data.timeout);
-    data.timeout = setTimeout(async () => {
-      const fetchedLogs = await newMember.guild.fetchAuditLogs({ type: 25, limit: 6 });
-      const auditEntry = fetchedLogs.entries.find(
-        entry => entry.target.id === newMember.id && Date.now() - entry.createdTimestamp < 15000
+    setTimeout(async () => {
+      const currentData = roleChangeBuffer.get(key);
+      if (!currentData || Date.now() - currentData.lastUpdate < 9000) return;
+
+      const addedRolesArray = Array.from(currentData.added.values());
+      const removedRolesArray = Array.from(currentData.removed.values());
+
+      const fetchedLogs = await newMember.guild.fetchAuditLogs({ 
+        type: 25, 
+        limit: 10 
+      }).catch(() => null);
+
+      const auditEntry = fetchedLogs?.entries.find(entry => 
+        entry.target.id === newMember.id && 
+        Date.now() - entry.createdTimestamp < 15000
       );
 
       const executor = auditEntry?.executor;
 
       const embed = new EmbedBuilder()
-        .setColor(data.added.size ? 0x2ecc71 : 0xe74c3c)
-        .setTitle('UPDATED PERMISSIONS | Lurix Development')
-        .setAuthor({ name: FOOTER_TEXT, iconURL: FOOTER_ICON })
+        .setColor(addedRolesArray.length > removedRolesArray.length ? 0x2ecc71 : 0xe74c3c)
+        .setTitle('📊 Actualización de Roles | GoalHub Development')
         .setThumbnail(newMember.user.displayAvatarURL())
         .addFields(
-          { name: '➥ 👤 Miembro', value: `${newMember} (\`${newMember.id}\`)`, inline: false },
-          { name: '➥ 👮 Responsable', value: executor ? `${executor} (\`${executor.id}\`)` : 'Desconocido', inline: false }
+          { name: '👤 Usuario', value: `${newMember.user.tag}\n(\`${newMember.id}\`)`, inline: true },
+          { name: '👮 Moderador', value: executor ? `${executor.tag}\n(\`${executor.id}\`)` : 'Desconocido', inline: true }
         )
+        .setFooter({ text: TEXT, iconURL: ICON })
         .setTimestamp();
 
-      if (data.added.size)
-        embed.addFields({ name: '➥ ✅ Roles añadidos', value: [...data.added].map(r => `<@&${r.id}>`).join(', ') });
+      if (addedRolesArray.length > 0) {
+        embed.addFields({ 
+          name: `✅ Roles Añadidos (${addedRolesArray.length})`, 
+          value: addedRolesArray.map(role => `<@&${role.id}>`).join('\n') 
+        });
+      }
 
-      if (data.removed.size)
-        embed.addFields({ name: '➥ 🚫 Roles eliminados', value: [...data.removed].map(r => `<@&${r.id}>`).join(', ') });
+      if (removedRolesArray.length > 0) {
+        embed.addFields({ 
+          name: `❌ Roles Eliminados (${removedRolesArray.length})`, 
+          value: removedRolesArray.map(role => `<@&${role.id}>`).join('\n') 
+        });
+      }
 
-      logChannel.send({ embeds: [embed] });
+      await logChannel.send({ embeds: [embed] }).catch(() => null);
       roleChangeBuffer.delete(key);
-    }, 10000);
+    }, 1000);
   }
 };

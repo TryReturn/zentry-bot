@@ -1,25 +1,26 @@
 const { EmbedBuilder, WebhookClient, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require("discord.js");
 const { v4: uuidv4 } = require("uuid");
-const SuggestionModel = require('../../database/models/Sugerencias');
-const config = require('../../config.json');
+const SuggestionModel = require('..//..//database/models/Sugerencias');
+const config = require('..//..//config.json');
+const { TEXT, ICON, ADMIN_ROLE_ID, SUGGESTION_CHANNEL_ID } = require('..//..//storageSystem');
 
 module.exports = {
   name: "interactionCreate",
 
   run: async (client, interaction) => {
     let errorWebhook;
-    const webhookURL = "";
+    const webhookURL = ""; // Cambiar por tu WebHook para logs de errores
 
     try {
       if (interaction.isChatInputCommand()) {
         const command = client.slash_commands.get(interaction.commandName);
         if (!command) {
           return interaction.reply({
-            content: "🤖 ┇ Este comando no es válido. Puede que el desarrollador lo haya eliminado.",
+            content: "🤖 | Este comando no es válido. Puede que el desarrollador lo haya eliminado.",
             flags: 64,
           });
         }
-        console.log("[SOPORTE] >> Support https://discord.gg/2xPFREjJHF");
+        console.log("[SOPORTE] >> Support discord.gg/da7zM3DNTW");
         errorWebhook = new WebhookClient({ url: webhookURL });
 
         if (command.run) {
@@ -30,13 +31,14 @@ module.exports = {
       //////////////////////////////////////////////////////////////////////////////////////////////////////
       //           AQUÍ ES DONDE ESTAN LOS MENUS INTERACTIVOS COMO EL COMANDO /ROLES.
       //////////////////////////////////////////////////////////////////////////////////////////////////////
+
       else if (interaction.isStringSelectMenu()) {
         if (interaction.customId !== "reaction-roles") return;
-        console.log("[SOPORTE] >> Support https://discord.gg/2xPFREjJHF");
+        console.log("[SOPORTE] >> Support discord.gg/da7zM3DNTW");
         const member = interaction.member;
         const selectedRoles = interaction.values;
 
-        const availableRoles = config.staffCommands.reactionRoles.roleOptions.map(
+        const availableRoles = config.reactionRoles.roleOptions.map(
           (r) => r.roleId
         );
 
@@ -68,7 +70,7 @@ module.exports = {
           if (!suggestion) {
             return interaction.reply({ content: "🚫 | Sugerencia no encontrada.", flags: 64 });
           }
-          console.log("[SOPORTE] >> Support https://discord.gg/2xPFREjJHF");
+          console.log("[SOPORTE] >> Support discord.gg/da7zM3DNTW");
           const userId = interaction.user.id;
 
           if (type === "positive" || type === "negative") {
@@ -117,14 +119,14 @@ module.exports = {
           }
         }
         else if (action === "suggestion") {
-          const suggestionButtonHandler = require('../../buttons/suggestionButtons');
+          const suggestionButtonHandler = require('..//..//buttons/suggestionButtons');
           return suggestionButtonHandler(client, interaction, type, suggestionId);
         }
         else {
           const buttonHandler = client.buttons.get(interaction.customId);
           if (!buttonHandler || typeof buttonHandler !== "function") {
             return interaction.reply({
-              content: "🤖 ┇ Este botón no está registrado o es inválido.",
+              content: "🤖 | Este botón no está registrado o es inválido.",
               ephemeral: true,
             });
           }
@@ -191,7 +193,7 @@ module.exports = {
     } catch (e) {
       const errorId = uuidv4();
       console.error(`[INTERACTION ERROR] >> ID: ${errorId}\n`, e);
-      console.log("[SOPORTE] >> Support https://discord.gg/2xPFREjJHF");
+      console.log("[SOPORTE] >> Support discord.gg/da7zM3DNTW");
 
 
       if (!errorWebhook) errorWebhook = new WebhookClient({ url: webhookURL });

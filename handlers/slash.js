@@ -19,7 +19,7 @@ module.exports = (client) => {
         table.addRow(client.slash_commands.size, file, "🟥 Missing data");
         continue;
       }
-      console.log("[SOPORTE] >> Support https://discord.gg/2xPFREjJHF");
+      console.log("[SOPORTE] >> Support https://discord.gg/da7zM3DNTW");
 
       client.slash_commands.set(command.data.name, command);
       commands.push(command.data.toJSON());
@@ -33,7 +33,7 @@ module.exports = (client) => {
     try {
       if (!config.client.ID) {
         console.warn("[WARN] >> Proporcione su ID de bot en config.client.ID");
-        console.log("[SOPORTE] >> Support https://discord.gg/2xPFREjJHF");
+        console.log("[SOPORTE] >> Support https://discord.gg/da7zM3DNTW");
         return process.exit(1);
       }
 
@@ -44,10 +44,10 @@ module.exports = (client) => {
 
       console.log(table.toString());
       console.log(`[SLASH_CMD] >> Se cargaron correctamente los comandos slash.`);
-      console.log("[SOPORTE] >> Support https://discord.gg/2xPFREjJHF");
+      console.log("[SOPORTE] >> Support https://discord.gg/da7zM3DNTW");
     } catch (err) {
       console.error("[ERROR] >> Error en el registro de comandos:", err);
-      console.log("[SOPORTE] >> Support https://discord.gg/2xPFREjJHF");
+      console.log("[SOPORTE] >> Support https://discord.gg/da7zM3DNTW");
     }
   })();
 };

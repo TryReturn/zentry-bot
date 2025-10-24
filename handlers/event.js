@@ -14,7 +14,7 @@ module.exports = (client) => {
         table.addRow(file, "🟥 Missing name or run() function");
         continue;
       }
-      console.log("[SOPORTE] >> Support https://discord.gg/2xPFREjJHF");
+      console.log("[SOPORTE] >> Support https://discord.gg/da7zM3DNTW");
 
       table.addRow(event.name, "🟩");
       client.on(event.name, (...args) => event.run(client, ...args));
@@ -23,5 +23,5 @@ module.exports = (client) => {
 
   console.log(table.toString());
   console.log("[EVENTS] >> Eventos cargados exitosamente."); 
-  console.log("[SOPORTE] >> Support https://discord.gg/2xPFREjJHF");
+  console.log("[SOPORTE] >> Support https://discord.gg/da7zM3DNTW");
 };

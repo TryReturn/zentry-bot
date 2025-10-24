@@ -4,7 +4,7 @@ module.exports = {
   build: () => {
     const modal = new ModalBuilder()
       .setCustomId('modal_suggest')
-      .setTitle('💡 By: Lurix Development');
+      .setTitle('💡 By: GoalHub Development');
 
     const suggestion = new TextInputBuilder()
       .setCustomId('suggestion_input')

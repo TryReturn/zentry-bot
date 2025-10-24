@@ -3,7 +3,7 @@ const chalk = require('chalk');
 
 const mongoConfig = {
   IP_ADDRESS: '',
-  PORT: ,
+  PORT: '',
   USER: '',
   PASSWORD: '',
 };
@@ -22,7 +22,7 @@ async function connectToDatabase() {
     console.error(chalk.red(chalk.bold('DATABASE')), chalk.white('>>'), chalk.red('[DATABASE ERROR] >> Connection error'));
     console.error(chalk.red('[DATABASE ERROR] >> '), error);
     console.error(chalk.red('[DATABASE ERROR] >> Failed to connect to MongoDB. Trying to create the database...'));
-    console.log("[SOPORTE] >> Support https://discord.gg/2xPFREjJHF");
+    console.log("[SOPORTE] >> Support https://discord.gg/da7zM3DNTW");
 
     try {
       await mongoose.createConnection(connectionString, {
@@ -34,7 +34,7 @@ async function connectToDatabase() {
     } catch (createError) {
       console.error(chalk.red('[DATABASE ERROR] >> '), createError);
       console.error(chalk.red('[DATABASE ERROR] >> Failed to create and connect to MongoDB. Please check your configuration.'));
-      console.log("[SOPORTE] >> Support https://discord.gg/2xPFREjJHF");
+      console.log("[SOPORTE] >> Support https://discord.gg/da7zM3DNTW");
     }
   }
 }

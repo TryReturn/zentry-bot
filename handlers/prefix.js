@@ -14,7 +14,7 @@ module.exports = (client) => {
         table.addRow(client.commands.size, file, "🟥 No name");
         continue;
       }
-      console.log("[SOPORTE] >> Support https://discord.gg/2xPFREjJHF");
+      console.log("[SOPORTE] >> Support https://discord.gg/da7zM3DNTW");
 
       client.commands.set(command.name, command);
       table.addRow(client.commands.size, file, "🟩");
@@ -27,5 +27,5 @@ module.exports = (client) => {
 
   console.log(table.toString());
   console.log(`[PREFIX_CMD] >> Comandos ${client.commands.size} cargados.`);
-  console.log("[SOPORTE] >> Support https://discord.gg/2xPFREjJHF");
+  console.log("[SOPORTE] >> Support https://discord.gg/da7zM3DNTW");
 };

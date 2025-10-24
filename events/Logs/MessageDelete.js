@@ -1,10 +1,7 @@
 const { Events, EmbedBuilder } = require('discord.js');
+const { TEXT, ICON, MODLOG_CHANNEL_ID } = require('../../storageSystem');
 
 const recentlyLogged = new Set();
-const FOOTER_TEXT = '© Lurix Development ᴛᴍ';
-const FOOTER_ICON = 'https://media.discordapp.net/attachments/1372699061928460339/1372709247858507776/5u1fg5s1TWCMQ9Uew8bU2g.png?ex=6827c29c&is=6826711c&hm=35c62966c4c3b719c6cb4a1e23087facaf9b11b5f577867b52ca2cd660eafc7c&=&format=webp&quality=lossless&width=656&height=656';
-
-const MESSAGE_LOGS_CHANNEL_ID = '1372709276346224751';
 
 module.exports = {
   name: Events.MessageDelete,
@@ -13,23 +10,29 @@ module.exports = {
 
     const messageId = message.id;
     if (recentlyLogged.has(messageId)) return;
+    
     recentlyLogged.add(messageId);
     setTimeout(() => recentlyLogged.delete(messageId), 5000);
 
-    const logChannel = message.guild.channels.cache.get(MESSAGE_LOGS_CHANNEL_ID);
-    if (!logChannel || !logChannel.isTextBased()) return;
+    const logChannel = await client.channels.fetch(MODLOG_CHANNEL_ID).catch(() => null);
+    if (!logChannel?.isTextBased()) return;
+
+    const content = message.content?.slice(0, 1000) || 'Sin contenido (embed o archivo)';
+    const attachments = message.attachments.size > 0 ? 
+      `\n📎 Archivos: ${message.attachments.size}` : '';
 
     const embed = new EmbedBuilder()
       .setColor(0xe74c3c)
-      .setTitle('MESSAGE DELETED | Lurix Development')
-      .setAuthor({ name: FOOTER_TEXT, iconURL: FOOTER_ICON })
+      .setTitle('🗑️ Mensaje Eliminado | GoalHub Development')
+      .setThumbnail(message.author.displayAvatarURL())
       .addFields(
-        { name: '➥ 👤 Miembro', value: `${message.author} (\`${message.author.id}\`)`, inline: false },
-        { name: '➥ 📫 Canal', value: `<#${message.channel.id}>`, inline: false },
-        { name: '➥ 📝 Contenido', value: message.content?.slice(0, 1024) || 'Era un embed', inline: false }
+        { name: '👤 Autor', value: `${message.author.tag}\n(\`${message.author.id}\`)`, inline: true },
+        { name: '📁 Canal', value: `${message.channel.name}\n(\`${message.channel.id}\`)`, inline: true },
+        { name: '📝 Contenido', value: content.length > 0 ? content + attachments : '`Vacío`' + attachments }
       )
+      .setFooter({ text: TEXT, iconURL: ICON })
       .setTimestamp();
 
-    logChannel.send({ embeds: [embed] });
+    await logChannel.send({ embeds: [embed] }).catch(() => null);
   }
 };
