@@ -1,4 +1,4 @@
-# 🤖 Lurix Development
+# 🤖 GoalHub Development
 
 **Zentry Bot** es un bot avanzado de Discord desarrollado con `discord.js v14`, diseñado para mejorar la interacción, moderación y gestión de servidores. Su principal enfoque es la gestión de sugerencias, con un sistema visual, ordenado y personalizable. Además, incluye votaciones, moderación de sugerencias y más.
 
@@ -45,7 +45,7 @@
 
 ![Sugerencia Embed](https://gyazo.com/2097a72a235a3045b9356de8f11e09bb)
 ![Gestión de las Sugerencias](https://gyazo.com/830a80ef6ea244336cf65ca77e04be4f)
-![Lurix Development Support](https://discord.gg/2xPFREjJHF)
+![GoalHub Development Support](https://discord.gg/da7zM3DNTW)
 
 ---
 
