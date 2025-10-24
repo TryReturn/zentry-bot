@@ -45,6 +45,7 @@
 
 ![Sugerencia Embed](https://gyazo.com/2097a72a235a3045b9356de8f11e09bb)
 ![Gestión de las Sugerencias](https://gyazo.com/830a80ef6ea244336cf65ca77e04be4f)
+<<<<<<< HEAD
 ![GoalHub Development Support](https://discord.gg/da7zM3DNTW)
 
 ---
