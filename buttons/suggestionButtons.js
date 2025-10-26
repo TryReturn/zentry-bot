@@ -1,38 +1,38 @@
 const { EmbedBuilder } = require("discord.js");
 const SuggestionModel = require('../database/models/Sugerencias');
-const StorageSystem = require('../stro');
+const StorageSystem = require('..//storageSystem');
 
 module.exports = async function suggestionButtons(client, interaction, type, suggestionId) {
   const suggestion = await SuggestionModel.findOne({ suggestionId });
   if (!suggestion) {
-    return interaction.reply({ content: "Sugerencia no encontrada.", ephemeral: true });
+    return interaction.reply({ content: "Sugerencia no encontrada.", flags: 64 });
   }
 
   if (suggestion.status === "Aceptada" || suggestion.status === "Rechazada") {
     if (type === "accept" || type === "reject") {
       return interaction.reply({
         content: `La sugerencia ya está ${suggestion.status.toLowerCase()}, primero debes restaurarla para cambiar su estado.`,
-        ephemeral: true
+        flags: 64
       });
     }
   }
 
   if ((type === "accept" || type === "reject") && suggestion.status !== "En revisión") {
-    return interaction.reply({ content: "Solo puedes aceptar o rechazar sugerencias que estén en revisión.", ephemeral: true });
+    return interaction.reply({ content: "Solo puedes aceptar o rechazar sugerencias que estén en revisión.", flags: 64 });
   }
 
   let newStatus;
   if (type === "accept") newStatus = "Aceptada";
   else if (type === "reject") newStatus = "Rechazada";
   else if (type === "restore") newStatus = "En revisión";
-  else return interaction.reply({ content: "Acción no válida.", ephemeral: true });
+  else return interaction.reply({ content: "Acción no válida.", flags: 64 });
 
   suggestion.status = newStatus;
   await suggestion.save();
 
   await interaction.reply({
     content: `Estado actualizado: **${newStatus}**`,
-    ephemeral: true
+    flags: 64
   });
 
   try {
